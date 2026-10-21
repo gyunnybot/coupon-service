@@ -34,8 +34,8 @@ class CouponService(
     // v0: 동시성 방어 의도적 제외. v1(02-coupon-concurrency-design.md)에서 해결.
     @Transactional
     fun issue(couponId: Long, userId: Long): Issuance {
-        val coupon = couponRepository.findById(couponId)
-            .orElseThrow { CouponNotFoundException() }
+        val coupon = couponRepository.findByIdForUpdate(couponId)
+            ?: throw CouponNotFoundException()
 
         val now = LocalDateTime.now()
 
