@@ -32,4 +32,8 @@ class Coupon(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 ) {
+    fun isBookingOpen(now: LocalDateTime): Boolean =
+        startsAt?.let { !now.isBefore(it) } ?: true
+
+    fun isSoldOut(): Boolean = issuedQuantity >= totalQuantity
 }

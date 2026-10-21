@@ -34,14 +34,14 @@ class Issuance(
     var couponId: Long,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 16)
+    @Column(length = 16)
     var status: IssuanceStatus = IssuanceStatus.ISSUED,
 
     @Column(nullable = false, updatable = false)
     var issuedAt: LocalDateTime,
 
     @Column(nullable = false)
-    var expiredAt: LocalDateTime,
+    var expiresAt: LocalDateTime,
 
     var usedAt: LocalDateTime? = null,
 
@@ -49,4 +49,14 @@ class Issuance(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 ) {
+    fun isExpired(now: LocalDateTime): Boolean = !now.isBefore(expiresAt)
+
+    fun markUsed(now: LocalDateTime) {
+        status = IssuanceStatus.USED
+        usedAt = now
+    }
+
+    fun markExpired() {
+        status = IssuanceStatus.EXPIRED
+    }
 }
