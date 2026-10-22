@@ -4,6 +4,7 @@ import com.example.coupon.api.dto.CreateCouponRequest
 import com.example.coupon.domain.Coupon
 import com.example.coupon.domain.CouponRepository
 import com.example.coupon.domain.Issuance
+import com.example.coupon.infrastructure.cache.CacheProperties
 import com.example.coupon.infrastructure.messaging.IssuanceRequestProducer
 import com.example.coupon.infrastructure.messaging.IssuanceRequested
 import com.example.coupon.support.CouponNotFoundException
@@ -15,6 +16,8 @@ import java.time.LocalDateTime
 @Service
 class CouponService(
     private val couponRepository: CouponRepository,
+    private val couponProperties: CacheProperties,
+    private val couponMetrics: CacheMetrics,
     private val couponIssuer: CouponIssuer,
     private val issuanceRequestProducer: IssuanceRequestProducer
 ) {
@@ -37,6 +40,10 @@ class CouponService(
     // v0: 동시성 방어 의도적 제외. v1(02-coupon-concurrency-design.md)에서 해결.
     @Transactional
     fun issue(couponId: Long, userId: Long): Issuance {
+        couponMetrics.incrementCouponDbRead()
+
+        Thread.sleep(couponProperties.simulatedLoadLatencyMs)
+
         val coupon = couponRepository.findById(couponId)
             .orElseThrow() { CouponNotFoundException() }
 
