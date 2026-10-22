@@ -16,8 +16,7 @@ import java.time.LocalDateTime
 @Service
 class CouponService(
     private val couponRepository: CouponRepository,
-    private val couponProperties: CacheProperties,
-    private val couponMetrics: CacheMetrics,
+    private val couponIssuePolicyReader: CouponIssuePolicyReader,
     private val couponIssuer: CouponIssuer,
     private val issuanceRequestProducer: IssuanceRequestProducer
 ) {
@@ -40,22 +39,17 @@ class CouponService(
     // v0: 동시성 방어 의도적 제외. v1(02-coupon-concurrency-design.md)에서 해결.
     @Transactional
     fun issue(couponId: Long, userId: Long): Issuance {
-        couponMetrics.incrementCouponDbRead()
-
-        Thread.sleep(couponProperties.simulatedLoadLatencyMs)
-
-        val coupon = couponRepository.findById(couponId)
-            .orElseThrow() { CouponNotFoundException() }
+        val policy = couponIssuePolicyReader.get(couponId)
 
         val now = LocalDateTime.now()
 
-        if (!coupon.isBookingOpen(now)) {
+        if (!policy.isBookingOpen(now)) {
             throw NotStartedException()
         }
 
         couponIssuer.tryIssue(couponId, userId)
 
-        val expiresAt = now.plusDays(coupon.validityDays.toLong())
+        val expiresAt = now.plusDays(policy.validityDays.toLong())
 
         issuanceRequestProducer.publish(
             IssuanceRequested(
