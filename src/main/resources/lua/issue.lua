@@ -1,8 +1,5 @@
--- 발급 원자 처리. Redis 단일 스레드 + 스크립트 단위 atomic 으로
--- 재고 차감 + 사용자 추가 를 한 덩어리에 묶는다.
---
--- KEYS: stock, users (set), sold_out
--- ARGV: userId, soldOutTtlSeconds
+-- KEYS: stock, users (set), sold_out, reconcile_index (zset)
+-- ARGV: userId, soldOutTtlSeconds, issuedAtMs, couponId
 -- 반환: 1=성공, 0=매진, -1=중복 발급
 
 if redis.call('SISMEMBER', KEYS[2], ARGV[1]) == 1 then
@@ -16,6 +13,8 @@ end
 
 redis.call('DECR', KEYS[1])
 redis.call('SADD', KEYS[2], ARGV[1])
+-- 대사 sliding window 인덱스: 쿠폰별 최신 발급 시각을 score 로 (member 는 couponId, ZADD 가 갱신).
+redis.call('ZADD', KEYS[4], ARGV[3], ARGV[4])
 
 if remaining == 1 then
   redis.call('SET', KEYS[3], '1', 'EX', ARGV[2])
