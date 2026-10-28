@@ -73,9 +73,9 @@ reconcile() {
 }
 
 source_stage() {
-  if [[ -f src/main/kotlin/com/apiece/coupon/batch/Reconciler.kt ]]; then
+  if [[ -f src/main/kotlin/com/example/coupon/batch/Reconciler.kt ]]; then
     printf 'part-5-2'
-  elif [[ -f src/main/kotlin/com/apiece/coupon/application/IssuanceDltService.kt ]]; then
+  elif [[ -f src/main/kotlin/com/example/coupon/application/IssuanceDltService.kt ]]; then
     printf 'part-5-1'
   else
     printf 'part-5-0'
