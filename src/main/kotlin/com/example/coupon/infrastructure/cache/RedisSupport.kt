@@ -14,11 +14,11 @@ fun longLuaScript(path: String): RedisScript<Long> =
 fun StringRedisTemplate.runForStrings(
     script: RedisScript<List<*>>,
     keys: List<String>,
-    vararg  args: Any,
+    vararg args: Any,
 ): List<String> = execute(script, keys, *args.map { it.toString() }.toTypedArray()) as List<String>
 
 fun StringRedisTemplate.runForLong(
     script: RedisScript<Long>,
     keys: List<String>,
-    vararg  args: Any,
+    vararg args: Any,
 ): Long = execute(script, keys, *args.map { it.toString() }.toTypedArray()) ?: error("Lua 결과가 null")

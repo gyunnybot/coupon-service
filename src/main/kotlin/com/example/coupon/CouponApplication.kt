@@ -11,5 +11,5 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class CouponApplication
 
 fun main(args: Array<String>) {
-	runApplication<CouponApplication>(*args)
+    runApplication<CouponApplication>(*args)
 }

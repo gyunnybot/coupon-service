@@ -56,6 +56,7 @@ class CouponCacheRepository(
                     cacheMetrics.incrementCouponCacheHit()
                     return objectMapper.readValue(result[1], CouponIssuePolicy::class.java)
                 }
+
                 "STALE_REFRESH" -> {
                     cacheMetrics.incrementCouponCacheHit()
                     backgroundExecutor.execute {
@@ -68,6 +69,7 @@ class CouponCacheRepository(
 
                     return objectMapper.readValue(result[1], CouponIssuePolicy::class.java)
                 }
+
                 "LOAD" -> return fillCache(cacheKey, lockKey, token, loader)
                 "WAIT" -> Thread.sleep(WAIT_BACKOFF_MS)
             }

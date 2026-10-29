@@ -30,9 +30,9 @@ class CouponReconciler(
 
         val stockNegative = stock < 0
 
-        if(stockNegative) log.warn { "재고 음수 감지 coupon=$couponId stock=$stock" }
+        if (stockNegative) log.warn { "재고 음수 감지 coupon=$couponId stock=$stock" }
 
-        if(dbDrift != 0L) {
+        if (dbDrift != 0L) {
             log.warn { "DB 측 불일치 감지 coupon = $coupon residual=$dbDrift (자동 보정 불가, 사람 확인)" }
         }
 
@@ -43,14 +43,14 @@ class CouponReconciler(
         // 자동 보정
         var autoFixed = reconcileSoldOut(couponId, stock)
 
-        var userDrift = coupon.totalQuantity - (reconcileRedisRepository.userCount(couponId) +  stock)
+        var userDrift = coupon.totalQuantity - (reconcileRedisRepository.userCount(couponId) + stock)
 
         var driftAlert = false
 
-        if(userDrift > 0) {
+        if (userDrift > 0) {
             val redisUserIds = reconcileRedisRepository.userIds(couponId).mapNotNull { it.toLongOrNull() }
             val missingUserIds = issuanceRepository.findUserIdsByCouponId(couponId) - redisUserIds
-            if(missingUserIds.size.toLong() == userDrift) {
+            if (missingUserIds.size.toLong() == userDrift) {
                 reconcileRedisRepository.addUsers(couponId, missingUserIds)
                 autoFixed++
 
@@ -60,7 +60,7 @@ class CouponReconciler(
 
                 log.warn { "Redis 사용자 목록을 안전하게 복구할 수 없음 coupon=$couponId" }
             }
-        } else if(userDrift < 0) {
+        } else if (userDrift < 0) {
             driftAlert = true
             log.warn { "Redis 사용자 목록 초과 감지 coupon=$couponId residual=$userDrift" }
         }
@@ -76,11 +76,13 @@ class CouponReconciler(
                 log.info { "auto-fix: 매진 플래그 해제 coupon=$couponId" }
                 1
             }
+
             stock == 0L && !soldOut -> {
                 reconcileRedisRepository.setSoldOut(couponId, soldOutProperties.ttlSeconds)
                 log.info { "auto-fix: 매진 플래그 설정 coupon=$couponId" }
                 1
             }
+
             else -> 0
         }
     }

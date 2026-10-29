@@ -18,7 +18,7 @@ class IssuanceDltService(
     fun record(record: ConsumerRecord<String, ByteArray>) {
         val messageKey = "${record.topic()}:${record.partition()}:${record.offset()}"
 
-        if(issuanceDltLogRepository.existsByMessageKey(messageKey)) return
+        if (issuanceDltLogRepository.existsByMessageKey(messageKey)) return
 
         issuanceDltLogRepository.save(
             IssuanceDltLog(

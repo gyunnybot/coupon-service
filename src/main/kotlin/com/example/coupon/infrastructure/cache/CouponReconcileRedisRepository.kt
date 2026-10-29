@@ -9,7 +9,7 @@ class CouponReconcileRedisRepository(
     private val redisTemplate: StringRedisTemplate,
 ) {
     fun couponIdsIssuedBetween(fromExclusiveMs: Long, toInclusiveMs: Long): List<Long> {
-        if(toInclusiveMs <= fromExclusiveMs) return emptyList()
+        if (toInclusiveMs <= fromExclusiveMs) return emptyList()
 
         val members = redisTemplate.opsForZSet().rangeByScore(
             "coupon:reconcile:recent",

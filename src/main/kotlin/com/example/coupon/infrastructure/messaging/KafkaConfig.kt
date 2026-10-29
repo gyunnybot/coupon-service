@@ -54,6 +54,7 @@ class KafkaConfig(
         val jsonDelegate = JacksonJsonDeserializer(IssuanceRequested::class.java, jsonMapper).apply {
             addTrustedPackages("com.example.coupon.infrastructure.messaging")
         }
+
         @Suppress("UNCHECKED_CAST")
         val valueDeserializer = ErrorHandlingDeserializer(jsonDelegate) as ErrorHandlingDeserializer<Any>
         return DefaultKafkaConsumerFactory(props, StringDeserializer(), valueDeserializer)

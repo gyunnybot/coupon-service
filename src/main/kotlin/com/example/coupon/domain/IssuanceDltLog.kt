@@ -33,7 +33,7 @@ class IssuanceDltLog(
     var status: IssuanceDltStatus = IssuanceDltStatus.PENDING,
 
     @Column(nullable = false)
-    var receivedAt : LocalDateTime,
+    var receivedAt: LocalDateTime,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,7 +14,7 @@ class IssuanceTransactionalWriter(
     @Transactional
     fun insertAndIncrement(event: IssuanceRequested) {
 
-        if(issuanceRepository.existsByUserIdAndCouponId(event.userId, event.couponId)) return
+        if (issuanceRepository.existsByUserIdAndCouponId(event.userId, event.couponId)) return
 
         issuanceRepository.save(
             Issuance(

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-interface IssuanceDltLogRepository: JpaRepository<IssuanceDltLog, Long> {
+interface IssuanceDltLogRepository : JpaRepository<IssuanceDltLog, Long> {
     fun existsByMessageKey(messageKey: String): Boolean
     fun findTop100ByOrderByReceivedAtDesc(): List<IssuanceDltLog>
 
